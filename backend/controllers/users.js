@@ -4,12 +4,14 @@ const User = require('../models/users');
 const NotFoundError = require('../errors/not-found-err');
 const WrongDataError = require('../errors/wrong-data-err');
 
+const { JWT_SECRET } = process.env;
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'mesto-backend', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 * 24 * 7 }).send({});
     })
     .catch(next);
