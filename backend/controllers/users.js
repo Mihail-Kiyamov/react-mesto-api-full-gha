@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const NotFoundError = require('../errors/not-found-err');
-const AuthError = require('../errors/auth-err');
+const WrongDataError = require('../errors/wrong-data-err');
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -12,10 +12,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'mesto-backend', { expiresIn: '7d' });
       res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 * 24 * 7 }).send({});
     })
-    .catch((err) => {
-      const authError = new AuthError(err.message);
-      next(authError);
-    });
+    .catch(next);
 };
 
 module.exports.getAllUsers = (req, res, next) => {
@@ -30,7 +27,13 @@ module.exports.getUser = (req, res, next) => {
       if (!user) throw new NotFoundError('Запрашиваемый пользователь не найден');
       return res.send({ data: user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
@@ -39,7 +42,13 @@ module.exports.getCurrentUser = (req, res, next) => {
       if (!user) throw new NotFoundError('Запрашиваемый пользователь не найден');
       return res.send({ data: user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -58,18 +67,34 @@ module.exports.createUser = (req, res, next) => {
       avatar,
       email,
       password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({ data: user });
     })
-      .then((user) => {
-        res.status(201).send({ data: user });
-      })
-      .catch(next));
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new WrongDataError('Пользователь с такой почтой уже существует'));
+      } else if (err.name === 'ValidationError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.patchUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.patchUserAvatar = (req, res, next) => {
@@ -77,5 +102,13 @@ module.exports.patchUserAvatar = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };

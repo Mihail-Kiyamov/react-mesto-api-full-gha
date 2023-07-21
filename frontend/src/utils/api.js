@@ -92,7 +92,7 @@ class Api {
     }
 }
 
-const api = new Api('https://nomoreparties.co/v1/cohort-63', {
+const api = new Api('https://api.domainname.mihailk.nomoredomains.xyz', {
     authorization: '65395c33-5b1a-4f62-9796-f7da5822a9af',
     'Content-Type': 'application/json'
 })

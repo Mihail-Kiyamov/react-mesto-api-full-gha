@@ -30,7 +30,7 @@ app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
-  }).unknown(true),
+  }),
 }), login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -57,13 +57,7 @@ app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
 
-  if (err.name === 'DocumentNotFoundError') res.status(404).send({ message: 'Запрашиваемые данные не найдены' });
-  else if (err.name === 'CastError') res.status(400).send({ message: 'Переданы некорректные данные' });
-  else if (err.name === 'ValidationError') res.status(400).send({ message: 'Переданы некорректные данные для создания' });
-  else if (err.code === 11000) res.status(409).send({ message: 'Такой email уже существует' });
-  else {
-    res.status(statusCode).send({ message });
-  }
+  res.status(statusCode).send({ message });
 
   next();
 });

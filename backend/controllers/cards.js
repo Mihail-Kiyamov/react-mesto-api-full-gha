@@ -1,6 +1,7 @@
 const Card = require('../models/cards');
 const NotFoundError = require('../errors/not-found-err');
 const AccessError = require('../errors/access-err');
+const WrongDataError = require('../errors/wrong-data-err');
 
 module.exports.getAllCards = (req, res, next) => {
   Card.find({})
@@ -15,7 +16,13 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send({ data: card }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -34,7 +41,13 @@ module.exports.deleteCard = (req, res, next) => {
           res.send({ data: card });
         });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -43,7 +56,13 @@ module.exports.likeCard = (req, res, next) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
       return res.send({ data: card });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -52,5 +71,11 @@ module.exports.dislikeCard = (req, res, next) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
       return res.send({ data: card });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new WrongDataError('Некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
