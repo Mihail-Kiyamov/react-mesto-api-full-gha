@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const NotFoundError = require('../errors/not-found-err');
 const WrongDataError = require('../errors/wrong-data-err');
+const DublicateError = require('../errors/dublicate-err');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -75,7 +76,7 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new WrongDataError('Пользователь с такой почтой уже существует'));
+        next(new DublicateError('Пользователь с такой почтой уже существует'));
       } else if (err.name === 'ValidationError') {
         next(new WrongDataError('Некорректные данные'));
       } else {
