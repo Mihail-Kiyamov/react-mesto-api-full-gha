@@ -9,6 +9,7 @@ const NotFoundError = require('./errors/not-found-err');
 const { login, createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
 const { cors } = require('./middlewares/cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -29,6 +30,8 @@ app.get('/crash-test', () => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
+
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -54,6 +57,8 @@ app.use('/cards', require('./routes/cards'));
 app.use((req, res, next) => {
   next(new NotFoundError('Некорректный путь'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
