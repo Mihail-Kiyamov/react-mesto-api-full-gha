@@ -8,6 +8,7 @@ const NotFoundError = require('./errors/not-found-err');
 
 const { login, createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
+const { cors } = require('./middlewares/cors');
 
 const { PORT = 3000 } = process.env;
 
@@ -20,6 +21,8 @@ mongoose.connect('mongodb://127.0.0.1/mestodb', {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(cors);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
