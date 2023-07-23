@@ -23,7 +23,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://domainname.mihailkiyamov.nomoredomains.xyz',
+  credentials: true,
+}));
 
 app.get('/crash-test', () => {
   setTimeout(() => {

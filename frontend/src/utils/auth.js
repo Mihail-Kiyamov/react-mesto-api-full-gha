@@ -10,6 +10,7 @@ function getResponse(res) {
 export function register(password, email) {
     return fetch(`${BASE_URL}/signup`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -21,6 +22,7 @@ export function register(password, email) {
 export function authorize(password, email) {
     return fetch(`${BASE_URL}/signin`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -29,7 +31,6 @@ export function authorize(password, email) {
         .then(res => getResponse(res))
         .then((data) => {
             if (data) {
-                localStorage.setItem('token', data.token);
                 return data;
             }
         });
@@ -39,6 +40,7 @@ export function authorize(password, email) {
 export function checkToken(token) {
     return fetch(`${BASE_URL}/users/me`, {
         method: 'GET',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,

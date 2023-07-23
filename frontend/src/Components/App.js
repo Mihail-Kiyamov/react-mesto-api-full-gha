@@ -33,26 +33,24 @@ function App() {
 
   useEffect(() => {
     if (loggedIn) {
-      handleTokenCheck()
-        .then(() => {
-          api.getProfileInfo()
-            .then((data) => {
-              setCurrentUser(currentUser => ({
-                ...currentUser,
-                ...data
-              }));
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+      api.getProfileInfo()
+        .then((data) => {
+          setCurrentUser(currentUser => ({
+            ...currentUser,
+            ...data
+          }));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
-          api.getInitialCards()
-            .then((data) => {
-              setCards(data);
-            })
-            .catch((err) => {
-              console.log(err);
-            })
+      api.getInitialCards()
+        .then((data) => {
+          setCards(data);
+          console.log(cards);
+        })
+        .catch((err) => {
+          console.log(err);
         })
     }
   }, [loggedIn]);
@@ -68,30 +66,10 @@ function App() {
     };
   }, [])
 
-  function handleTokenCheck() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      return auth.checkToken(token)
-        .then(res => res.data)
-        .then((res) => {
-          if (res) {
-            setLoggedIn(true);
-            setCurrentUser(currentUser => ({
-              ...currentUser,
-              email: res.email
-            }));
-            navigate("/", { replace: true })
-          }
-        })
-        .catch(err => console.log(err));
-    }
-    return Promise.reject();
-  }
-
   function handleLogin(password, email) {
     auth.authorize(password, email)
       .then((data) => {
-        if (data.token) {
+        if (data) {
           navigate('/', { replace: true });
           setLoggedIn(true);
           return true;
@@ -107,7 +85,7 @@ function App() {
     auth.register(password, email)
       .then((res) => {
         if (res.data) {
-          navigate('/sign-in', { replace: true });
+          navigate('/signin', { replace: true });
           handleOpenInfoTooltip(true);
         }
       })
@@ -203,7 +181,7 @@ function App() {
 
   function handleAccountExit() {
     localStorage.removeItem('token');
-    navigate('/sign-in', { replace: true });
+    navigate('/signin', { replace: true });
     setIsMobileMenuOpen(false);
     setLoggedIn(false);
   }
@@ -233,8 +211,8 @@ function App() {
               onCardLike={handleCardLike}
               onCardDelete={handleCardDelete} />
             } />
-            <Route path='/sign-in' element={<Login onLogin={handleLogin} />} />
-            <Route path='/sign-up' element={<Register onRegister={handleRegister} />} />
+            <Route path='/signin' element={<Login onLogin={handleLogin} />} />
+            <Route path='/signup' element={<Register onRegister={handleRegister} />} />
           </Routes>
           <Footer />
         </div>

@@ -14,8 +14,8 @@ function Header({ isLoggedIn, onExit, isMobile, onMobileMenuClick, isMobileMenuO
             <img className="header__logo" src={logo} alt="Лого Mesto" />
 
             {!isLoggedIn && !isMobile &&
-                <NavLink to={location.pathname === '/sign-in' ? '/sign-up' : '/sign-in'} className='header__auth-link'>
-                    {location.pathname === '/sign-in' ? 'Регистрация' : 'Войти'}</NavLink>}
+                <NavLink to={location.pathname === '/signin' ? '/signup' : '/signin'} className='header__auth-link'>
+                    {location.pathname === '/signin' ? 'Регистрация' : 'Войти'}</NavLink>}
 
             {isLoggedIn && !isMobile &&
                 <>
