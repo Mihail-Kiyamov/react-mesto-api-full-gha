@@ -13,14 +13,14 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
-      res.cookie('jwt', token, { httpOnly: true, maxAge: 604800000 }).send( user );
+      res.cookie('jwt', token, { httpOnly: true, maxAge: 604800000 }).send(user);
     })
     .catch(next);
 };
 
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send( users ))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -28,7 +28,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) throw new NotFoundError('Запрашиваемый пользователь не найден');
-      return res.send( user );
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -43,7 +43,7 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) throw new NotFoundError('Запрашиваемый пользователь не найден');
-      return res.send( user );
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -72,7 +72,7 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
     }))
     .then((user) => {
-      res.status(201).send( user );
+      res.status(201).send(user);
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -88,7 +88,7 @@ module.exports.createUser = (req, res, next) => {
 module.exports.patchUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.send( user ))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new WrongDataError('Некорректные данные'));
@@ -104,7 +104,7 @@ module.exports.patchUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send( user ))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new WrongDataError('Некорректные данные'));

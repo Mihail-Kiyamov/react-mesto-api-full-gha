@@ -5,7 +5,7 @@ const WrongDataError = require('../errors/wrong-data-err');
 
 module.exports.getAllCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send( cards ))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -14,7 +14,7 @@ module.exports.createCard = (req, res, next) => {
   const { _id: owner } = req.user;
 
   Card.create({ name, link, owner })
-    .then((card) => res.status(201).send( card ))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new WrongDataError('Некорректные данные'));
@@ -37,7 +37,7 @@ module.exports.deleteCard = (req, res, next) => {
     .then(() => {
       Card.findByIdAndRemove(req.params.id)
         .then((card) => {
-          res.send( card );
+          res.send(card);
         });
     })
     .catch((err) => {
@@ -68,7 +68,7 @@ module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
-      return res.send( card );
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
