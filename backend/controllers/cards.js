@@ -53,7 +53,7 @@ module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
-      return res.send( card );
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
