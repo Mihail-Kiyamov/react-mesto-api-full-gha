@@ -7,8 +7,4 @@
 
 ## Ссылки на проект
 
-IP-адрес 158.160.37.176
-
-Frontend https://domainname.mihailkiyamov.nomoredomains.xyz
-
-Backend https://api.domainname.mihailk.nomoredomains.xyz
+[Frontend](https://react-mesto-api-full-gha.vercel.app/)
